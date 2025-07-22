@@ -28,27 +28,20 @@ deschedulerPolicy:
           evictableNamespaces:
             include: []
             exclude: ["kube-system", "kube-public"]
-          # Additional protection for StatefulSets and CronJobs
-          excludeOwnerKinds:
-            - "StatefulSet"
-            - "DaemonSet"
-            - "Job"  # Protects CronJob pods
       - name: "RemovePodsHavingTooManyRestarts"
         args:
           podRestartThreshold: 2
           includingInitContainers: true
-          # Exclude StatefulSets and CronJobs from restart-based eviction
           excludeOwnerKinds:
             - "StatefulSet"  # StatefulSets need careful restart handling
             - "Job"  # CronJob pods might restart intentionally
       plugins:
         deschedule:
           enabled:
-            - "RemoveDuplicates"
-            - "LowNodeUtilization"
             - "RemovePodsHavingTooManyRestarts"
         balance:
           enabled:
+            - "RemoveDuplicates"
             - "LowNodeUtilization"
         
 # Additional configuration for different workload types

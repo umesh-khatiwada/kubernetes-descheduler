@@ -1,0 +1,27 @@
+replicas: 1
+leaderElection:
+  enabled: true
+kind: Deployment
+
+deschedulerPolicyAPIVersion: "descheduler/v1alpha2"
+deschedulerPolicy:
+  profiles:
+    - name: SimpleProfile
+      pluginConfig:
+      - name: "RemoveDuplicates"
+      plugins:
+        balance:
+          enabled:
+            - "RemoveDuplicates"
+
+evictDaemonSetPods: false
+evictSystemCriticalPods: false
+evictLocalStoragePods: false
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
