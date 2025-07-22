@@ -6,14 +6,23 @@ kind: Deployment
 deschedulerPolicyAPIVersion: "descheduler/v1alpha2"
 deschedulerPolicy:
   profiles:
-    - name: TestProfile
+    - name: RemoveDuplicates
       pluginConfig:
       - name: "RemoveDuplicates"
       plugins:
         balance:
           enabled:
             - "RemoveDuplicates"
-
+    - name: ToManyRestartsProfile
+      pluginConfig:
+      - name: "RemovePodsHavingTooManyRestarts"
+        args:
+          podRestartThreshold: 5
+          includingInitContainers: true
+      plugins:
+        deschedule:
+          enabled:
+            - "RemovePodsHavingTooManyRestarts"
 evictDaemonSetPods: false
 evictSystemCriticalPods: false
 evictLocalStoragePods: false
