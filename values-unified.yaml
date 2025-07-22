@@ -1,0 +1,259 @@
+# Comprehensive Descheduler Configuration
+# Merged from all development values files
+# Supports both Deployment and CronJob modes with multiple environments
+
+# =================================================================
+# DEPLOYMENT CONFIGURATION (for continuous descheduling)
+# =================================================================
+replicas: 3
+leaderElection:
+  enabled: true
+kind: Deployment
+deschedulingInterval: 5m
+
+# =================================================================
+# CRONJOB CONFIGURATION (for periodic descheduling)
+# =================================================================
+# Uncomment below for CronJob mode:
+# kind: CronJob
+# schedule: "*/30 * * * *"  # Production: every 30 minutes
+# schedule: "*/10 * * * *"  # Development: every 10 minutes
+# suspend: false
+# successfulJobsHistoryLimit: 3
+# failedJobsHistoryLimit: 1
+# ttlSecondsAfterFinished: 3600
+
+# =================================================================
+# IMAGE AND RESOURCES
+# =================================================================
+image:
+  repository: registry.k8s.io/descheduler/descheduler
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# Production resources
+resources:
+  requests:
+    cpu: 500m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+
+# Development resources (uncomment for dev environments)
+# resources:
+#   requests:
+#     cpu: 200m
+#     memory: 128Mi
+#   limits:
+#     cpu: 500m
+#     memory: 256Mi
+
+# =================================================================
+# SECURITY CONTEXT
+# =================================================================
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  privileged: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# =================================================================
+# DESCHEDULER POLICY CONFIGURATION
+# =================================================================
+deschedulerPolicyAPIVersion: "descheduler/v1alpha2"
+deschedulerPolicy:
+  profiles:
+    - name: ComprehensiveProfile
+      pluginConfig:
+      
+      # Default Evictor - Controls what can be evicted
+      - name: "DefaultEvictor"
+        args:
+          evictDaemonSetPods: false
+          evictSystemCriticalPods: false
+          evictLocalStoragePods: false  # Set to true for dev environments
+          ignorePvcPods: true  # Set to false for dev environments
+          nodeFit: true
+          
+      # Remove Duplicate Pods
+      - name: "RemoveDuplicates"
+        args:
+          # Use excludeOwnerKinds for fine-grained control (if supported)
+          # excludeOwnerKinds:
+          #   - "StatefulSet"
+          #   - "DaemonSet" 
+          #   - "Job"
+          # Use namespace exclusion as alternative
+          namespaces:
+            exclude:
+              - "kube-system"
+              - "kube-public"
+              - "kube-node-lease"
+              - "monitoring"
+              - "logging"
+              
+      # Balance Node Utilization
+      - name: "LowNodeUtilization"
+        args:
+          # Production thresholds (conservative)
+          thresholds:
+            cpu: 20
+            memory: 20
+            pods: 20
+          targetThresholds:
+            cpu: 50
+            memory: 50
+            pods: 50
+          # Development thresholds (more aggressive)
+          # thresholds:
+          #   cpu: 10
+          #   memory: 15
+          #   pods: 10
+          # targetThresholds:
+          #   cpu: 60
+          #   memory: 70
+          #   pods: 60
+          evictableNamespaces:
+            exclude:
+              - "kube-system"
+              - "kube-public"
+              - "kube-node-lease"
+              - "monitoring"
+              - "logging"
+              
+      # Remove Pods with Too Many Restarts
+      - name: "RemovePodsHavingTooManyRestarts"
+        args:
+          podRestartThreshold: 3  # Production: 3, Development: 2
+          includingInitContainers: true
+          namespaces:
+            exclude:
+              - "kube-system"
+              - "kube-public"
+              - "kube-node-lease"
+              
+      # Remove Pods Violating Node Affinity
+      - name: "RemovePodsViolatingNodeAffinity"
+        args:
+          nodeAffinityType:
+            - requiredDuringSchedulingIgnoredDuringExecution
+          namespaces:
+            exclude:
+              - "kube-system"
+              - "kube-public"
+              - "kube-node-lease"
+              
+      # Remove Pods Violating Node Taints
+      - name: "RemovePodsViolatingNodeTaints"
+        args:
+          namespaces:
+            exclude:
+              - "kube-system"
+              - "kube-public"
+              - "kube-node-lease"
+              
+      # Remove Pods Violating Topology Spread Constraints
+      - name: "RemovePodsViolatingTopologySpreadConstraint"
+        args:
+          namespaces:
+            exclude:
+              - "kube-system"
+              - "kube-public"
+              - "kube-node-lease"
+              
+      # Plugin execution order
+      plugins:
+        filter:
+          enabled:
+            - "DefaultEvictor"
+        deschedule:
+          enabled:
+            - "RemovePodsHavingTooManyRestarts"
+            - "RemovePodsViolatingNodeAffinity"
+            - "RemovePodsViolatingNodeTaints"
+        balance:
+          enabled:
+            - "RemoveDuplicates"
+            - "LowNodeUtilization"
+            - "RemovePodsViolatingTopologySpreadConstraint"
+
+# =================================================================
+# ADDITIONAL CONFIGURATION
+# =================================================================
+# Global eviction settings
+evictDaemonSetPods: false
+evictSystemCriticalPods: false
+evictLocalStoragePods: false
+
+# Namespace filtering (global)
+namespaces:
+  include: []
+  exclude: 
+    - kube-system
+    - kube-public
+    - kube-node-lease
+    - monitoring
+    - logging
+
+# Node selector
+nodeSelector:
+  kubernetes.io/os: linux
+
+# Priority class
+priorityClassName: system-cluster-critical
+
+# Priority threshold
+priorityThreshold:
+  value: 10000
+
+# RBAC
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: ""
+
+# Pod annotations and labels
+podAnnotations: {}
+podLabels: {}
+
+# Monitoring (optional)
+serviceMonitor:
+  enabled: false
+  additionalLabels: {}
+  interval: "30s"
+
+# =================================================================
+# ENVIRONMENT-SPECIFIC CONFIGURATIONS
+# =================================================================
+
+# For Development Environment, uncomment these:
+# kind: CronJob
+# schedule: "*/10 * * * *"
+# resources:
+#   requests:
+#     cpu: 200m
+#     memory: 128Mi
+#   limits:
+#     cpu: 500m
+#     memory: 256Mi
+# deschedulerPolicy.profiles[0].pluginConfig[0].args.evictLocalStoragePods: true
+# deschedulerPolicy.profiles[0].pluginConfig[0].args.ignorePvcPods: false
+
+# For Production Environment (default settings above)
+
+# For Testing Environment, uncomment these:
+# replicas: 1
+# resources:
+#   requests:
+#     cpu: 100m
+#     memory: 128Mi
+#   limits:
+#     cpu: 200m
+#     memory: 256Mi

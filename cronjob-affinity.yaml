@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: descheduler-low-util
+  namespace: kube-system
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: descheduler
+              image: k8s.gcr.io/descheduler/descheduler:v0.29.0
+              command:
+                - /bin/descheduler
+                - --policy-config-file
+                - /policy-dir/policy.yaml
+              volumeMounts:
+                - name: policy-volume
+                  mountPath: /policy-dir
+          restartPolicy: OnFailure
+          volumes:
+            - name: policy-volume
+              configMap:
+                name: descheduler-policy-low-utilization
