@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: www-deployment-pod
+  labels:
+    app: www
+spec:
+  containers:
+    - name: www-server
+      image: hwchiu/python-example
+      command: ['sh', '-c', 'date && no']
+      ports:
+        - containerPort: 5000
+          protocol: "TCP"
