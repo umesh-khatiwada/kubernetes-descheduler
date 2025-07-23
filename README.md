@@ -286,6 +286,8 @@ namespaces:
 ```
 ## Architecture Diagram
 ![Descheduler Architecture](assets/removeduplicate.png)
+![Descheduler Architecture](assets/removepods-violating.png)
+![Descheduler Architecture](assets/removepodsviolating-affinity.png)
 
 
 ## Resources & References
