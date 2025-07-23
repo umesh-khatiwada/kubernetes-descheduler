@@ -1,0 +1,10 @@
+apiVersion: "descheduler/v1alpha2"
+kind: "DeschedulerPolicy"
+profiles:
+  - name: ProfileName
+    pluginConfig:
+    - name: "RemovePodsViolatingInterPodAntiAffinity"
+    plugins:
+      deschedule:
+        enabled:
+          - "RemovePodsViolatingInterPodAntiAffinity"

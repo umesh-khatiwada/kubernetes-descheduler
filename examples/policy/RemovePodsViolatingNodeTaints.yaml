@@ -1,0 +1,14 @@
+apiVersion: "descheduler/v1alpha2"
+kind: "DeschedulerPolicy"
+profiles:
+  - name: ProfileName
+    pluginConfig:
+    - name: "RemovePodsViolatingNodeTaints"
+      args:
+        excludedTaints:
+        - dedicated=special-user # exclude taints with key "dedicated" and value "special-user"
+        - reserved # exclude all taints with key "reserved"
+    plugins:
+      deschedule:
+        enabled:
+          - "RemovePodsViolatingNodeTaints"

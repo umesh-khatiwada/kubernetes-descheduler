@@ -1,0 +1,19 @@
+apiVersion: "descheduler/v1alpha2"
+kind: "DeschedulerPolicy"
+profiles:
+  - name: ProfileName
+    pluginConfig:
+    - name: "RemoveFailedPods"
+      args:
+        reasons:
+        - "NodeAffinity"
+        exitCodes:
+        - 1
+        includingInitContainers: true
+        excludeOwnerKinds:
+        - "Job"
+        minPodLifetimeSeconds: 3600
+    plugins:
+      deschedule:
+        enabled:
+          - "RemoveFailedPods"

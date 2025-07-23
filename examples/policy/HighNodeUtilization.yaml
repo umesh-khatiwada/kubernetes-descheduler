@@ -1,0 +1,21 @@
+apiVersion: "descheduler/v1alpha2"
+kind: "DeschedulerPolicy"
+profiles:
+  - name: ProfileName
+    pluginConfig:
+    - name: "HighNodeUtilization"
+      args:
+        thresholds:
+          "cpu" : 20
+          "memory": 20
+          "pods": 20
+        evictableNamespaces:
+          exclude:
+          - "kube-system"
+          - "namespace1"
+        evictionModes:
+          - "OnlyThresholdingResources"
+    plugins:
+      balance:
+        enabled:
+          - "HighNodeUtilization"
