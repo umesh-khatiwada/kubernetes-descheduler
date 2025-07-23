@@ -1,0 +1,36 @@
+apiVersion: "descheduler/v1alpha2"
+kind: "DeschedulerPolicy"
+profiles:
+  - name: ProfileName
+    pluginConfig:
+    - name: "RemoveDuplicates"
+    - name: "RemovePodsViolatingInterPodAntiAffinity"
+    - name: "LowNodeUtilization"
+      args:
+        thresholds:
+          "cpu" : 20
+          "memory": 20
+          "pods": 20
+        targetThresholds:
+          "cpu" : 50
+          "memory": 50
+          "pods": 50
+    - name: "RemovePodsHavingTooManyRestarts"
+      args:
+        podRestartThreshold: 100
+        includingInitContainers: true
+    - name: "RemovePodsViolatingTopologySpreadConstraint"
+      args:
+        constraints:
+          - DoNotSchedule
+          - ScheduleAnyway
+    plugins:
+      deschedule:
+        enabled:
+          - "RemovePodsViolatingInterPodAntiAffinity"
+          - "RemovePodsHavingTooManyRestarts"
+      balance:
+        enabled:
+          - "RemoveDuplicates"
+          - "LowNodeUtilization"
+          - "RemovePodsViolatingTopologySpreadConstraint"

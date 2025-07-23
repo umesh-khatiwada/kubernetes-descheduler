@@ -1,0 +1,14 @@
+apiVersion: "descheduler/v1alpha2"
+kind: "DeschedulerPolicy"
+profiles:
+  - name: ProfileName
+    pluginConfig:
+    - name: "RemovePodsViolatingTopologySpreadConstraint"
+      args:
+        constraints:
+          - DoNotSchedule
+          - ScheduleAnyway
+    plugins:
+      balance:
+        enabled:
+          - "RemovePodsViolatingTopologySpreadConstraint"
