@@ -285,7 +285,7 @@ namespaces:
     - "your-critical-namespace"
 ```
 ## Architecture Diagram
-![Descheduler Architecture](assets/removeduplicates.png)
+![Descheduler Architecture](assets/removeduplicate.png)
 
 
 ## Resources & References
