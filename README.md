@@ -20,6 +20,27 @@ kubectl apply -f descheduler-cronjob.yaml
 ./manage-descheduler.sh logs
 ```
 
+The descheduler can be run as a Job, CronJob, or Deployment inside of a k8s cluster. It has the advantage of being able to be run multiple times without needing user intervention. The descheduler pod is run as a critical pod in the kube-system namespace to avoid being evicted by itself or by the kubelet.
+
+Run As A Job
+
+kubectl create -f kubernetes/base/rbac.yaml
+kubectl create -f kubernetes/base/configmap.yaml
+kubectl create -f kubernetes/job/job.yaml
+
+Run As A CronJob
+kubectl create -f kubernetes/base/rbac.yaml
+kubectl create -f kubernetes/base/configmap.yaml
+kubectl create -f kubernetes/cronjob/cronjob.yaml
+
+Run As A Deployment
+kubectl create -f kubernetes/base/rbac.yaml
+kubectl create -f kubernetes/base/configmap.yaml
+kubectl create -f kubernetes/deployment/deployment.yaml
+
+
+
+
 ## Files Structure
 
 ### ✅ **Main Files (Use These)**
