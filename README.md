@@ -1,6 +1,32 @@
 # Kubernetes Descheduler Configuration
 
-This repository contains working descheduler configurations for Kubernetes with multiple deployment options and example policies.
+This repository contains working descheduler configurations for Kubernetes w### 🚀 **Main Deployment Files**
+- `kubernetes/base/` - Core RBAC and ConfigMap resources
+- `kubernetes/cronjob/` - **Recommended**: Periodic descheduling
+- `kubernetes/job/` - One-time descheduling operations  
+- `kubernetes/deployment/` - Continuous descheduling
+
+### 📚 **Example Configurations**
+- `examples/policy.yaml` - Complete descheduler policy example
+- `examples/*.yml` - Specific policy examples (node utilization, pod lifetime, etc.)
+- `examples/cronjob/` - CronJob-specific examples
+- `examples/deployment/` - Deployment examples
+
+### 🎯 **Helm Charts**deployment options and example policies.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Deployment Options](#deployment-options)
+- [Repository Structure](#repository-structure)
+- [Current Configuration](#current-configuration)
+- [Monitoring & Management](#monitoring--management)
+- [Customization](#customization)
+- [Troubleshooting](#troubleshooting)
+- [Production Considerations](#production-considerations)
+- [Resources & References](#resources--references)
+- [Contributing](#contributing)
 
 ## Overview
 
@@ -20,6 +46,9 @@ kubectl apply -k kubernetes/job/
 
 # Or deploy as a continuous Deployment
 kubectl apply -k kubernetes/deployment/
+
+# Verify deployment
+kubectl get cronjob,job,deployment -n kube-system -l app=descheduler
 ```
 
 ### Option 2: Manual Deployment
@@ -35,6 +64,22 @@ kubectl apply -f kubernetes/job/job.yaml
 # OR 
 kubectl apply -f kubernetes/deployment/deployment.yaml
 ```
+
+### Option 3: Using Official Upstream Kustomize
+If you prefer to use the latest official descheduler images directly:
+
+```bash
+# Run as a Job
+kustomize build 'github.com/kubernetes-sigs/descheduler/kubernetes/job?ref=release-1.33' | kubectl apply -f -
+
+# Run as a CronJob
+kustomize build 'github.com/kubernetes-sigs/descheduler/kubernetes/cronjob?ref=release-1.33' | kubectl apply -f -
+
+# Run as a Deployment
+kustomize build 'github.com/kubernetes-sigs/descheduler/kubernetes/deployment?ref=release-1.33' | kubectl apply -f -
+```
+
+> **Note**: The upstream version uses default policies. Use the local configurations in this repository for customized policies and examples.
 
 ## Deployment Options
 
@@ -80,7 +125,7 @@ The descheduler can be run as a Job, CronJob, or Deployment inside a Kubernetes 
 ├── helm/                       # Helm chart configurations
 │   ├── values-cronjob.yaml    # Helm values for CronJob
 │   └── values-unified.yaml    # Unified Helm values
-└── assets/                     # Documentation images
+└── assests/                    # Documentation images
     └── *.png                   # Architecture diagrams
 ```
 
