@@ -285,16 +285,8 @@ namespaces:
     - "your-critical-namespace"
 ```
 ## Architecture Diagram
-![Descheduler Architecture](assets/descheduler-architecture.png)
-- `helm/` - Helm chart configurations for easy deployment
-  - `values-cronjob.yaml` - Production-ready CronJob values
-  - `values-unified.yaml` - Comprehensive Helm configuration
-- `assets/` - Documentation images and diagrams
-- `assets/descheduler-architecture.png` - Architecture diagram of descheduler components
-- `assets/` - Documentation images and diagrams
-  - `descheduler-architecture.png` - Architecture diagram of descheduler components
-- `README.md` - This documentation file
-- `LICENSE` - License information for the repository
+![Descheduler Architecture](assets/removeduplicates.png)
+
 
 ## Resources & References
 
