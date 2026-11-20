@@ -1,18 +1,9 @@
 # Kubernetes Descheduler Configuration
 
-This repository contains working descheduler configurations for Kubernetes w### 🚀 **Main Deployment Files**
-- `kubernetes/base/` - Core RBAC and ConfigMap resources
-- `kubernetes/cronjob/` - **Recommended**: Periodic descheduling
-- `kubernetes/job/` - One-time descheduling operations  
-- `kubernetes/deployment/` - Continuous descheduling
+![Kubernetes](https://img.shields.io/badge/kubernetes-descheduler-326CE5)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-### 📚 **Example Configurations**
-- `examples/policy.yaml` - Complete descheduler policy example
-- `examples/*.yml` - Specific policy examples (node utilization, pod lifetime, etc.)
-- `examples/cronjob/` - CronJob-specific examples
-- `examples/deployment/` - Deployment examples
-
-### 🎯 **Helm Charts**deployment options and example policies.
+Working configurations for the Kubernetes [Descheduler](https://github.com/kubernetes-sigs/descheduler), with ready-to-apply manifests (Kustomize and Helm values) for the CronJob, Job and Deployment run modes, plus example policies for each strategy.
 
 ## Table of Contents
 
@@ -135,7 +126,7 @@ The descheduler can be run as a Job, CronJob, or Deployment inside a Kubernetes 
 - `kubernetes/job/` - One-time descheduling operations  
 - `kubernetes/deployment/` - Continuous descheduling
 
-### � **Example Configurations**
+### 📚 **Example Configurations**
 - `examples/policy.yaml` - Complete descheduler policy example
 - `examples/*.yml` - Specific policy examples (node utilization, pod lifetime, etc.)
 - `examples/cronjob/` - CronJob-specific examples
@@ -304,3 +295,7 @@ When contributing to this repository:
 2. Validate YAML syntax and Kubernetes resource definitions
 3. Update examples and documentation accordingly  
 4. Follow Kubernetes best practices for security and resource management
+
+## License
+
+Released under the [MIT License](LICENSE).
